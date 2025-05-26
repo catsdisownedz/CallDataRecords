@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loader
+  template:
+    metadata:
+      labels:
+        app: loader
+    spec:
+      containers:
+        - name: loader
+          image: loader-image:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KAFKA_SERVERS
+              value: "kafka:9092"
