@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CDR and User Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/keycloak-js@24.0.2/dist/keycloak.min.js"></script>
+    <script defer src="/scripts.js"></script>
+</head>
+<body>
+<header>
+    <h1>CDRs and Users Database</h1>
+</header>
+<main>
+    <section>
+        <h2>CDRs</h2>
+        <table id="cdrs-table">
+            <thead>
+            <tr><th>ID</th><th>ANUM</th><th>BNUM</th><th>Service Type</th><th>Usage</th><th>Start Date-Time</th></tr>
+            </thead>
+            <tbody id="cdrs-table-body"></tbody>
+        </table>
+    </section>
+    <section>
+        <h2>Users</h2>
+        <table id="users-table">
+            <thead><tr><th>ID</th><th>Username</th></tr></thead>
+            <tbody id="users-table-body"></tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,55 @@
+body {
+    background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+}
+
+.kc-form-login {
+    width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    background: #fff0f5;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 2px solid #f7cde3;
+    text-align: center;
+}
+
+.kc-login-title {
+    font-family: 'Courier New', monospace;
+    color: #d67ba8;
+    margin-bottom: 20px;
+}
+
+.input-field {
+    width: 90%;
+    padding: 12px;
+    margin: 12px auto;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.login-button {
+    width: 100%;
+    background: #ee92c3;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    transition: background 0.3s ease;
+}
+
+.login-button:hover {
+    background: #e877ad;
+}
+
+.redirect-message {
+    margin-top: 15px;
+    font-size: 0.95em;
+    color: #888;
+    font-style: italic;
+}

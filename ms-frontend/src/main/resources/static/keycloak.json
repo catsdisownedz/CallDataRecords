@@ -1,0 +1,9 @@
+{
+  "realm": "cdr-realm",
+  "auth-server-url": "http://localhost:8081",
+  "ssl-required": "none",
+  "resource": "cdr-frontend",
+  "public-client": true,
+  "confidential-port": 0,
+  "redirect_uris": ["http://localhost:8080/*"]
+}

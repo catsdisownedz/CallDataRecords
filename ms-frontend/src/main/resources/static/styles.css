@@ -1,0 +1,58 @@
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+thead {
+    background-color: #ee92c3;
+    color: white;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+pre {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    overflow-x: auto;
+}
+
+
+.centered {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.login-box {
+    width: 300px;
+    margin: 30px auto;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background: #fdfdfd;
+    text-align: center;
+}
+
+.login-box button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background: #ee92c3;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}

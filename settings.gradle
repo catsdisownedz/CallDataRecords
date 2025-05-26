@@ -1,0 +1,3 @@
+rootProject.name = 'CallDataRecords'
+include 'ms-loader'
+include 'ms-backend'
