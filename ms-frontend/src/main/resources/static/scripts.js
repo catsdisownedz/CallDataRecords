@@ -1,4 +1,5 @@
 let keycloak;
+let fullData = [];
 
 window.onload = async function () {
     try {
@@ -36,17 +37,22 @@ async function initKeycloak() {
 
     if (keycloak.authenticated) {
         localStorage.setItem("cdr-token", keycloak.token);
+        const username = keycloak.tokenParsed?.preferred_username || "User";
+        document.getElementById('welcome-message').innerText = `Welcome, ${username}`;
     } else {
         keycloak.login();
     }
+
 }
 
 async function fetchData() {
-    try {
-        await loadCDRs();  // No filters, full load
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
+    const token = keycloak.token;
+    const response = await fetch(`${window.BACKEND_URL}/api/cdrs`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    fullData = await response.json();
+    displayCDRs(fullData);
+    generateCharts(fullData);
 }
 
 // ✨ FULL no-filter load
@@ -71,24 +77,77 @@ async function loadFilteredCDRs({ sort = null, serviceType = null } = {}) {
     const response = await fetch(url.toString(), {
         headers: { Authorization: `Bearer ${token}` }
     });
-    const data = await response.json();
+    let data = await response.json();
 
-    displayCDRs(data);
+    const messageEl = document.getElementById('info-message');
+    messageEl.style.display = 'none';
+
+    if (sort === 'bnum') {
+        const hasOnlyNullData = data.filter(cdr => cdr.serviceType === 'DATA').every(cdr => cdr.bnum === null || cdr.bnum === 'null');
+        if (hasOnlyNullData) {
+            data = data.filter(cdr => cdr.serviceType !== 'DATA');
+            showTemporaryMessage("DATA removed because all its BNUM are null.");
+        }
+    }
+
+    displayCDRs(data, serviceType);
     generateCharts(data);
 }
 
-function displayCDRs(data) {
-    const tbody = document.getElementById('cdrs-table-body');
-    tbody.innerHTML = data.map(cdr => `
-        <tr style="background-color: ${getRandomPastelColor()}">
-            <td>${cdr.id}</td>
-            <td>${cdr.anum}</td>
-            <td>${cdr.bnum}</td>
-            <td>${cdr.serviceType}</td>
-            <td>${cdr.usage}</td>
-            <td>${cdr.startDateTime}</td>
-        </tr>`).join('');
+function showTemporaryMessage(text) {
+    const messageEl = document.getElementById('info-message');
+    messageEl.innerText = text;
+    messageEl.style.display = 'block';
+    messageEl.style.color = '#d12c7f'; // dark pink
+    setTimeout(() => {
+        messageEl.style.display = 'none';
+    }, 10000);
 }
+
+function displayCDRs(data, options = {}) {
+    const tbody = document.getElementById('cdrs-table-body');
+    const thead = document.getElementById('table-head');
+    const infoMsg = document.getElementById('info-message');
+    let filteredData = [...data];
+
+    infoMsg.style.display = 'none';
+
+    if (options.sort === 'bnum') {
+        const allDataNull = filteredData.filter(cdr => cdr.serviceType.toLowerCase() === 'data')
+            .every(cdr => !cdr.bnum || cdr.bnum === 'null');
+        if (allDataNull) {
+            filteredData = filteredData.filter(cdr => cdr.serviceType.toLowerCase() !== 'data');
+            showTemporaryMessage("DATA removed because all its bnum are null.");
+        }
+    }
+
+    if (options.serviceType === 'data') {
+        thead.innerHTML = `<tr><th>ID</th><th>Customer</th><th>Service Type</th><th>Usage</th><th>Start Date-Time</th></tr>`;
+        tbody.innerHTML = filteredData
+            .filter(cdr => cdr.serviceType.toLowerCase() === 'data')
+            .map(cdr => `
+                <tr style="background-color: ${getRandomPastelColor()}">
+                    <td>${cdr.id}</td>
+                    <td>${cdr.anum}</td>
+                    <td>${cdr.serviceType}</td>
+                    <td>${cdr.usage}</td>
+                    <td>${cdr.startDateTime}</td>
+                </tr>`).join('');
+    } else {
+        thead.innerHTML = `<tr><th>ID</th><th>ANUM</th><th>BNUM</th><th>Service Type</th><th>Usage</th><th>Start Date-Time</th></tr>`;
+        tbody.innerHTML = filteredData.map(cdr => `
+            <tr style="background-color: ${getRandomPastelColor()}">
+                <td>${cdr.id}</td>
+                <td>${cdr.anum}</td>
+                <td>${cdr.bnum}</td>
+                <td>${cdr.serviceType}</td>
+                <td>${cdr.usage}</td>
+                <td>${cdr.startDateTime}</td>
+            </tr>`).join('');
+    }
+}
+
+let chartInstances = {};
 
 function generateCharts(data) {
     const counts = { call: 0, sms: 0, data: 0 };
@@ -99,62 +158,57 @@ function generateCharts(data) {
 
     const total = counts.call + counts.sms + counts.data;
 
-    // Clear existing chart info
-    ['mostUsedInfo', 'callInfo', 'smsInfo', 'dataInfo'].forEach(id => {
-        document.getElementById(id).innerHTML = '';
-    });
+    if (chartInstances['mostUsedChart']) {
+        chartInstances['mostUsedChart'].data.datasets[0].data = [counts.call, counts.sms, counts.data];
+        chartInstances['mostUsedChart'].update();
+    } else {
+        chartInstances['mostUsedChart'] = new Chart(document.getElementById('mostUsedChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Call', 'SMS', 'Data'],
+                datasets: [{
+                    data: [counts.call, counts.sms, counts.data],
+                    backgroundColor: ['#ffc0cb', '#dda0dd', '#87ceeb'],
+                }]
+            },
+            options: { plugins: { title: { display: true, text: 'Total Service Type Distribution' } } }
+        });
+    }
 
-    // Total distribution chart
-    new Chart(document.getElementById('mostUsedChart'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Call', 'SMS', 'Data'],
-            datasets: [{
-                data: [counts.call, counts.sms, counts.data],
-                backgroundColor: ['#ffc0cb', '#dda0dd', '#87ceeb'],
-            }]
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Total Service Type Distribution'
-                }
-            }
+    ['call', 'sms', 'data'].forEach(type => {
+        if (chartInstances[`${type}Chart`]) {
+            chartInstances[`${type}Chart`].data.datasets[0].data = [counts[type], total - counts[type]];
+            chartInstances[`${type}Chart`].update();
+        } else {
+            chartInstances[`${type}Chart`] = new Chart(document.getElementById(`${type}Chart`), {
+                type: 'pie',
+                data: {
+                    labels: [type.toUpperCase(), 'Other'],
+                    datasets: [{
+                        data: [counts[type], total - counts[type]],
+                        backgroundColor: ['#ee92c3', '#f0f0f0']
+                    }]
+                },
+                options: { plugins: { title: { display: true, text: `${type.toUpperCase()} Volume` } } }
+            });
         }
     });
 
-    // Show percentages and counts below
     document.getElementById('mostUsedInfo').innerText =
         `Call: ${counts.call} (${((counts.call / total) * 100 || 0).toFixed(1)}%) | ` +
         `SMS: ${counts.sms} (${((counts.sms / total) * 100 || 0).toFixed(1)}%) | ` +
         `Data: ${counts.data} (${((counts.data / total) * 100 || 0).toFixed(1)}%)`;
 
-    // Individual charts + info
-    ['call', 'sms', 'data'].forEach(type => {
-        new Chart(document.getElementById(`${type}Chart`), {
-            type: 'pie',
-            data: {
-                labels: [type.toUpperCase(), 'Other'],
-                datasets: [{
-                    data: [counts[type], total - counts[type]],
-                    backgroundColor: ['#ee92c3', '#f0f0f0']
-                }]
-            },
-            options: {
-                plugins: {
-                    title: {
-                        display: true,
-                        text: `${type.toUpperCase()} Volume`
-                    }
-                }
-            }
-        });
+    document.getElementById('callInfo').innerText =
+        `CALL: ${counts.call} (${((counts.call / total) * 100 || 0).toFixed(1)}%)`;
 
-        document.getElementById(`${type}Info`).innerText =
-            `${type.toUpperCase()}: ${counts[type]} (${((counts[type] / total) * 100 || 0).toFixed(1)}%)`;
-    });
+    document.getElementById('smsInfo').innerText =
+        `SMS: ${counts.sms} (${((counts.sms / total) * 100 || 0).toFixed(1)}%)`;
+
+    document.getElementById('dataInfo').innerText =
+        `DATA: ${counts.data} (${((counts.data / total) * 100 || 0).toFixed(1)}%)`;
 }
+
 
 function getRandomPastelColor() {
     const r = Math.floor(Math.random() * 256);
@@ -240,15 +294,30 @@ document.getElementById('filter-by').onchange = function () {
 };
 
 async function applyFilter() {
+    let data = [...fullData];
     const by = document.getElementById('filter-by').value;
     const serviceType = document.getElementById('service-type-filter').value;
+    const dateFilter = document.getElementById('date-selector').value;
 
-    // Always clear and apply only the current selection
-    if (by === 'anum' || by === 'bnum' || by === 'usage') {
-        await loadFilteredCDRs({ sort: by });
-    } else if (by === 'service') {
-        await loadFilteredCDRs({ serviceType });
-    } else {
-        await loadCDRs();
+    // Apply date filter first, update charts
+    if (dateFilter === 'today') {
+        const today = new Date().toISOString().slice(0, 10);
+        data = data.filter(cdr => cdr.startDateTime.startsWith(today));
     }
+    generateCharts(data);
+
+    // Apply table filters without changing charts
+    if (by === 'id') {
+        data.sort((a, b) => a.id - b.id);
+    } else if (by === 'anum') {
+        data.sort((a, b) => a.anum.localeCompare(b.anum));
+    } else if (by === 'bnum') {
+        data.sort((a, b) => a.bnum?.localeCompare(b.bnum));
+    } else if (by === 'usage') {
+        data.sort((a, b) => b.usage - a.usage);
+    } else if (by === 'service') {
+        displayCDRs(data, { serviceType });
+        return;
+    }
+    displayCDRs(data, { sort: by });
 }

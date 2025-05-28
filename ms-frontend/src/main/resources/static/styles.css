@@ -1,7 +1,9 @@
-body, h1, h2 {
+h1, h2, th {
     font-family: "Pixelify Sans", sans-serif;
 }
-
+ body {
+     font-family: "WDXL Lubrifont TC", sans-serif;
+ }
 .pink-select, .pink-button {
     padding: 6px 12px;
     margin: 5px;
@@ -106,6 +108,7 @@ button#logout-btn:hover {
 .chart-block {
     flex: 1 1 22%;
     text-align: center;
+    padding-bottom: 40px;
 }
 
 .chart-block canvas {
@@ -113,11 +116,15 @@ button#logout-btn:hover {
     height: auto;
     background: #fff0f5;
     border-radius: 8px;
+    margin-bottom: 15px;
 }
 
 .chart-info {
+    font-family: 'Courier New', monospace;
     font-size: 0.9em;
-    margin-top: 5px;
+    margin-top: 8px;
+    padding: 5px 0;
+    min-height: 35px; /* added height */
     color: #555;
 }
 
@@ -148,4 +155,17 @@ button#logout-btn:hover {
 .pixelify-title {
     font-family: "Pixelify Sans", sans-serif;
     font-weight: 600;
+}
+
+.welcome-message {
+    font-family: "WDXL Lubrifont TC", sans-serif;
+    font-size: 1.8rem;
+    color: #c95fcc;
+    margin-bottom: 15px;
+}
+
+.info-message {
+    text-align: right;
+    margin-right: 20px;
+    font-size: 0.95rem;
 }

@@ -38,10 +38,12 @@ public class CDRController {
         if (sort != null) {
             switch (sort.toLowerCase()) {
                 case "anum":
-                    cdrs.sort(Comparator.comparing(CDR::getAnum));
+                    cdrs.sort(Comparator.comparing(cdr ->
+                            cdr.getAnum() != null ? cdr.getAnum() : "", String::compareTo));
                     break;
                 case "bnum":
-                    cdrs.sort(Comparator.comparing(CDR::getBnum));
+                    cdrs.sort(Comparator.comparing(cdr ->
+                            cdr.getBnum() != null ? cdr.getBnum() : "", String::compareTo));
                     break;
                 case "usage":
                     cdrs.sort(Comparator.comparing(CDR::getUsage).reversed());
@@ -51,6 +53,7 @@ public class CDRController {
 
         return cdrs;
     }
+
 
     @PostMapping("/cdrs")
     public CDR createCDR(@RequestBody CDR cdr) {
