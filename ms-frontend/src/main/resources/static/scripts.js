@@ -1,17 +1,34 @@
 let keycloak;
 
-document.addEventListener('DOMContentLoaded', async function () {
-    const form = document.getElementById('signup-form');
-    if (form) {
-        initSignupForm(); // Only runs if we're on signup page
-    } else {
-        await initKeycloak(); // Runs if we're on protected pages
-        fetchData();
+window.onload = async function () {
+    try {
+        const config = await fetch('config.json').then(r => r.json());
+        window.KEYCLOAK_URL = config.KEYCLOAK_URL;
+        window.BACKEND_URL = config.BACKEND_URL;
+
+        console.log('✅ Loaded config:', config);
+
+        const form = document.getElementById('signup-form');
+        if (form) {
+            initSignupForm();
+        } else {
+            await initKeycloak();
+            fetchData();
+        }
+    } catch (error) {
+        console.error('❌ Failed to load config.json', error);
     }
-});
+};
 
 async function initKeycloak() {
-    keycloak = new Keycloak('/keycloak.json');
+    const keycloakConfig = {
+        url: window.KEYCLOAK_URL,
+        realm: 'cdr-realm',
+        clientId: 'cdr-frontend'
+    };
+
+    keycloak = new Keycloak(keycloakConfig);
+
     await keycloak.init({
         onLoad: 'login-required',
         checkLoginIframe: false
@@ -26,19 +43,41 @@ async function initKeycloak() {
 
 async function fetchData() {
     try {
-        const token = keycloak.token;
-        await fetchCDRs(token);
-        await fetchUsers(token);
+        await loadCDRs();  // No filters, full load
     } catch (error) {
         console.error('Error fetching data:', error);
     }
 }
 
-async function fetchCDRs(token) {
-    const response = await fetch('http://localhost:8082/api/cdrs', {
+// ✨ FULL no-filter load
+async function loadCDRs() {
+    const token = keycloak.token;
+    const response = await fetch(`${window.BACKEND_URL}/api/cdrs`, {
         headers: { Authorization: `Bearer ${token}` }
     });
     const data = await response.json();
+
+    displayCDRs(data);
+    generateCharts(data);
+}
+
+// ✨ FILTERED load
+async function loadFilteredCDRs({ sort = null, serviceType = null } = {}) {
+    const url = new URL(`${window.BACKEND_URL}/api/cdrs/filtered`);
+    if (sort) url.searchParams.append('sort', sort);
+    if (serviceType) url.searchParams.append('serviceType', serviceType);
+
+    const token = keycloak.token;
+    const response = await fetch(url.toString(), {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await response.json();
+
+    displayCDRs(data);
+    generateCharts(data);
+}
+
+function displayCDRs(data) {
     const tbody = document.getElementById('cdrs-table-body');
     tbody.innerHTML = data.map(cdr => `
         <tr style="background-color: ${getRandomPastelColor()}">
@@ -51,17 +90,70 @@ async function fetchCDRs(token) {
         </tr>`).join('');
 }
 
-async function fetchUsers(token) {
-    const response = await fetch('http://localhost:8082/api/users', {
-        headers: { Authorization: `Bearer ${token}` }
+function generateCharts(data) {
+    const counts = { call: 0, sms: 0, data: 0 };
+    data.forEach(cdr => {
+        const type = cdr.serviceType.toLowerCase();
+        if (counts[type] !== undefined) counts[type]++;
     });
-    const data = await response.json();
-    const tbody = document.getElementById('users-table-body');
-    tbody.innerHTML = data.map(user => `
-        <tr style="background-color: ${getRandomPastelColor()}">
-            <td>${user.id}</td>
-            <td>${user.username}</td>
-        </tr>`).join('');
+
+    const total = counts.call + counts.sms + counts.data;
+
+    // Clear existing chart info
+    ['mostUsedInfo', 'callInfo', 'smsInfo', 'dataInfo'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+    });
+
+    // Total distribution chart
+    new Chart(document.getElementById('mostUsedChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Call', 'SMS', 'Data'],
+            datasets: [{
+                data: [counts.call, counts.sms, counts.data],
+                backgroundColor: ['#ffc0cb', '#dda0dd', '#87ceeb'],
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Total Service Type Distribution'
+                }
+            }
+        }
+    });
+
+    // Show percentages and counts below
+    document.getElementById('mostUsedInfo').innerText =
+        `Call: ${counts.call} (${((counts.call / total) * 100 || 0).toFixed(1)}%) | ` +
+        `SMS: ${counts.sms} (${((counts.sms / total) * 100 || 0).toFixed(1)}%) | ` +
+        `Data: ${counts.data} (${((counts.data / total) * 100 || 0).toFixed(1)}%)`;
+
+    // Individual charts + info
+    ['call', 'sms', 'data'].forEach(type => {
+        new Chart(document.getElementById(`${type}Chart`), {
+            type: 'pie',
+            data: {
+                labels: [type.toUpperCase(), 'Other'],
+                datasets: [{
+                    data: [counts[type], total - counts[type]],
+                    backgroundColor: ['#ee92c3', '#f0f0f0']
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `${type.toUpperCase()} Volume`
+                    }
+                }
+            }
+        });
+
+        document.getElementById(`${type}Info`).innerText =
+            `${type.toUpperCase()}: ${counts[type]} (${((counts[type] / total) * 100 || 0).toFixed(1)}%)`;
+    });
 }
 
 function getRandomPastelColor() {
@@ -84,7 +176,7 @@ function initSignupForm() {
         msg.className = "info";
 
         try {
-            const response = await fetch('http://localhost:8082/api/signup', {
+            const response = await fetch(`${window.BACKEND_URL}/api/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -128,4 +220,35 @@ function animateRedirectMessage(message, elementId) {
         clearInterval(interval);
         window.location.href = "/";
     }, 3000);
+}
+
+document.getElementById('logout-btn').onclick = () => {
+    const msg = document.getElementById('redirect-msg');
+    msg.style.display = 'block';
+    setTimeout(() => {
+        keycloak.logout({ redirectUri: window.location.origin });
+    }, 2000);
+};
+
+document.getElementById('filter-by').onchange = function () {
+    const serviceDropdown = document.getElementById('service-type-filter');
+    if (this.value === 'service') {
+        serviceDropdown.style.display = 'inline';
+    } else {
+        serviceDropdown.style.display = 'none';
+    }
+};
+
+async function applyFilter() {
+    const by = document.getElementById('filter-by').value;
+    const serviceType = document.getElementById('service-type-filter').value;
+
+    // Always clear and apply only the current selection
+    if (by === 'anum' || by === 'bnum' || by === 'usage') {
+        await loadFilteredCDRs({ sort: by });
+    } else if (by === 'service') {
+        await loadFilteredCDRs({ serviceType });
+    } else {
+        await loadCDRs();
+    }
 }

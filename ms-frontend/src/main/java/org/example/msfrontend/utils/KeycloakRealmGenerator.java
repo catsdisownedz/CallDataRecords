@@ -29,7 +29,12 @@ public class KeycloakRealmGenerator {
             client.put("clientId", "cdr-frontend");
             client.put("publicClient", true);
             client.put("standardFlowEnabled", true);
-            client.putArray("redirectUris").add("http://localhost:3000/*");
+            ArrayNode redirectUris = client.putArray("redirectUris");
+            redirectUris.add("http://localhost:80/*");
+            redirectUris.add("http://localhost:8080/*");
+            redirectUris.add("http://localhost/*");
+            redirectUris.add("http://localhost:3000/*");
+            client.set("redirectUris", redirectUris);
             client.putArray("webOrigins").add("*");
             clients.add(client);
             realm.set("clients", clients);

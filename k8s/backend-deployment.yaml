@@ -15,8 +15,15 @@ spec:
       containers:
         - name: backend
           image: backend-image:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:
             - name: KAFKA_SERVERS
               value: "kafka:9092"
+            - name: KEYCLOAK_URL
+              value: http://keycloak:8081
+            - name: FRONTEND_URL
+              value: http://localhost
+            - name: BACKEND_URL
+              value: http://backend:8080

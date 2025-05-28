@@ -1,3 +1,20 @@
+body, h1, h2 {
+    font-family: "Pixelify Sans", sans-serif;
+}
+
+.pink-select, .pink-button {
+    padding: 6px 12px;
+    margin: 5px;
+    background-color: #ee92c3;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pink-button:hover {
+    background-color: #d46ba3;
+}
 
 table {
     width: 100%;
@@ -55,4 +72,80 @@ pre {
     color: white;
     border-radius: 5px;
     cursor: pointer;
+}
+
+button#logout-btn {
+    float: right;
+    margin: 10px;
+    background: #ee92c3;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button#logout-btn:hover {
+    background: #d46ba3;
+}
+
+.pink-box {
+    border: 1px solid #ee92c3;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chart-block {
+    flex: 1 1 22%;
+    text-align: center;
+}
+
+.chart-block canvas {
+    max-width: 100%;
+    height: auto;
+    background: #fff0f5;
+    border-radius: 8px;
+}
+
+.chart-info {
+    font-size: 0.9em;
+    margin-top: 5px;
+    color: #555;
+}
+
+.chart-container canvas {
+    max-width: 100%;
+    max-height: 200px;
+    width: 100%;
+    height: auto;
+    background: #fff0f5;
+    border-radius: 8px;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    max-width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: #ee92c3 lightcoral;
+}
+
+.table-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+    background-color: #ee92c3;
+    border-radius: 4px;
+}
+.pixelify-title {
+    font-family: "Pixelify Sans", sans-serif;
+    font-weight: 600;
 }

@@ -55,7 +55,12 @@ cat <<EOF > "$OUTPUT_JSON"
     {
       "clientId": "cdr-frontend",
       "publicClient": true,
-      "redirectUris": ["http://localhost:8080/*"],
+      "redirectUris": [
+              "http://localhost/*",
+              "http://localhost:80/*",
+              "http://localhost:8080/*",
+              "http://localhost:3000/*"
+            ],
       "webOrigins": ["*"],
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true

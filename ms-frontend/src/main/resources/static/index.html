@@ -2,32 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CDR and User Management</title>
+    <title>Call Data Records</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/keycloak-js@24.0.2/dist/keycloak.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script defer src="/scripts.js"></script>
 </head>
 <body>
 <header>
-    <h1>CDRs and Users Database</h1>
+    <h1 class="pixelify-title">Call Data Records</h1>
 </header>
 <main>
-    <section>
-        <h2>CDRs</h2>
-        <table id="cdrs-table">
-            <thead>
-            <tr><th>ID</th><th>ANUM</th><th>BNUM</th><th>Service Type</th><th>Usage</th><th>Start Date-Time</th></tr>
-            </thead>
-            <tbody id="cdrs-table-body"></tbody>
-        </table>
+    <button id="logout-btn">🚪 Logout</button>
+    <p id="redirect-msg" style="display:none; color: hotpink; font-style: italic;">Redirecting to login page...</p>
+
+    <section class="filter-section">
+        <label for="filter-by">Filter Records By:</label>
+        <select id="filter-by" class="pink-select">
+            <option value="none">Default (no filter)</option>
+            <option value="anum">Alphabetical: ANUM</option>
+            <option value="bnum">Alphabetical: BNUM</option>
+            <option value="service">Service Type</option>
+            <option value="usage">Usage Rates</option>
+        </select>
+
+        <select id="service-type-filter" class="pink-select" style="display:none;">
+            <option value="call">Call</option>
+            <option value="sms">SMS</option>
+            <option value="data">Data</option>
+        </select>
+
+        <button class="pink-button" onclick="applyFilter()">Apply</button>
     </section>
+
+    <section id="charts-section" class="pink-box">
+        <h2 class="pixelify-title">Service Type Volume</h2>
+        <div class="chart-container">
+            <div class="chart-block">
+                <canvas id="mostUsedChart"></canvas>
+                <div id="mostUsedInfo" class="chart-info"></div>
+            </div>
+            <div class="chart-block">
+                <canvas id="callChart"></canvas>
+                <div id="callInfo" class="chart-info"></div>
+            </div>
+            <div class="chart-block">
+                <canvas id="smsChart"></canvas>
+                <div id="smsInfo" class="chart-info"></div>
+            </div>
+            <div class="chart-block">
+                <canvas id="dataChart"></canvas>
+                <div id="dataInfo" class="chart-info"></div>
+            </div>
+        </div>
+        <label for="date-selector">Change Date:</label>
+        <select id="date-selector" class="pink-select">
+            <option value="all">All Days</option>
+            <option value="today">Today</option>
+            <!-- Dynamically populate -->
+        </select>
+    </section>
+
     <section>
-        <h2>Users</h2>
-        <table id="users-table">
-            <thead><tr><th>ID</th><th>Username</th></tr></thead>
-            <tbody id="users-table-body"></tbody>
-        </table>
+        <h2 class="pixelify-title">CDRs</h2>
+        <div class="table-scroll">
+            <table id="cdrs-table">
+                <thead>
+                <tr><th>ID</th><th>ANUM</th><th>BNUM</th><th>Service Type</th><th>Usage</th><th>Start Date-Time</th></tr>
+                </thead>
+                <tbody id="cdrs-table-body"></tbody>
+            </table>
+        </div>
     </section>
 </main>
 </body>

@@ -31,7 +31,7 @@
                 form.addEventListener('submit', function (e) {
                     const redirectEl = document.getElementById('redirect-login');
                     redirectEl.style.display = 'block';
-                    let baseMessage = "Redirecting to CDRs";
+                    let baseMessage = 'Redirecting to CDRs';
                     let counter = 0;
                     const interval = setInterval(() => {
                         let dots = '.'.repeat(counter % 4);

@@ -118,7 +118,10 @@ services:
       - ./ms-backend/src:/app/src
       - ./data:/app/data
     environment:
-        - KAFKA_SERVERS=kafka:9092
+      - KAFKA_SERVERS=kafka:9092
+      - KEYCLOAK_URL=http://localhost:8081
+      - FRONTEND_URL=http://localhost
+      - BACKEND_URL=http://localhost:8082
     depends_on:
       kafka:
         condition: service_healthy
@@ -136,14 +139,21 @@ services:
       dockerfile: ./ms-frontend/Dockerfile
     container_name: ms-frontend
     ports:
-      - "8080:3000"
+      - "80:3000"  # unify to localhost:80
     volumes:
       - ./ms-frontend/src:/app/src
       - ./data:/app/data
+      - ./ms-frontend/src/main/resources/static/config-docker.json:/app/src/main/resources/static/config.json
+      - ./ms-frontend/src/main/resources/static/keycloak.json:/app/static/keycloak.json
+    environment:
+      - KEYCLOAK_URL=http://localhost:8081
+      - BACKEND_URL=http://localhost:8082
+      - FRONTEND_URL=http://localhost
     depends_on:
       - keycloak
     networks:
       - cdr-network
+
 
   ms-loader:
     build:
@@ -152,6 +162,7 @@ services:
     container_name: ms-loader
     environment:
       - KAFKA_SERVERS=kafka:9092
+      - BACKEND_URL=http://localhost:8082
     depends_on:
       kafka:
         condition: service_healthy

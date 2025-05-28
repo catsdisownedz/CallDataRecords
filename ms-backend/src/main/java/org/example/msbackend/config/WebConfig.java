@@ -9,11 +9,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
+        // ✅ Read FRONTEND_URL from env, fallback to localhost:8080
+        String frontendUrl = System.getenv().getOrDefault("FRONTEND_URL", "http://localhost:8080");
+
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:8080")
+                        .allowedOrigins(frontendUrl, "http://localhost",  "http://127.0.0.1*")
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);

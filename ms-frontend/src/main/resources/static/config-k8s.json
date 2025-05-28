@@ -1,0 +1,4 @@
+{
+  "KEYCLOAK_URL": "http://localhost/auth",
+  "BACKEND_URL": "http://localhost/api"
+}

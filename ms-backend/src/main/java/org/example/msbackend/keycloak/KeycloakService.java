@@ -12,7 +12,7 @@ import java.util.Map;
 @Service
 public class KeycloakService {
 
-    private final String KEYCLOAK_URL = "http://keycloak:8081";
+    private final String KEYCLOAK_URL = System.getenv().getOrDefault("KEYCLOAK_URL", "http://localhost:8081");
     private final String REALM = "cdr-realm";
     private final String ADMIN_USERNAME = "admin";
     private final String ADMIN_PASSWORD = "admin";
