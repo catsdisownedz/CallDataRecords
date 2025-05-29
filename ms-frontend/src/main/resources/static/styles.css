@@ -96,6 +96,9 @@ button#logout-btn:hover {
     padding: 15px;
     margin-top: 20px;
     border-radius: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 50px;
+    min-height: 400px;
 }
 
 .chart-container {

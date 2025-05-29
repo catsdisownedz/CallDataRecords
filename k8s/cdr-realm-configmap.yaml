@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cdr-realm-configmap
+data:
+  cdr-realm.json: |
+    {
+      "realm": "cdr-realm",
+      "enabled": true,
+      "loginTheme": "cdr-pastel",
+      "clients": [
+        {
+          "clientId": "cdr-frontend",
+          "publicClient": true,
+          "redirectUris": [
+            "http://localhost/*",
+            "http://localhost:80/*",
+            "http://localhost:8080/*",
+            "http://localhost:3000/*"
+          ],
+          "webOrigins": ["*"],
+          "standardFlowEnabled": true,
+          "directAccessGrantsEnabled": true
+        }
+      ],
+      "users": [
+        { "username": "zeina", "enabled": true, "email": "zeina@example.com", "emailVerified": true, "firstName": "zeina", "lastName": "User", "credentials": [ { "type": "password", "value": "toto", "temporary": false } ] },
+        { "username": "admin", "enabled": true, "email": "admin@example.com", "emailVerified": true, "firstName": "admin", "lastName": "User", "credentials": [ { "type": "password", "value": "password", "temporary": false } ] },
+        { "username": "mzaza", "enabled": true, "email": "mzaza@example.com", "emailVerified": true, "firstName": "mzaza", "lastName": "User", "credentials": [ { "type": "password", "value": "zozo", "temporary": false } ] },
+        { "username": "zozzy", "enabled": true, "email": "zozzy@example.com", "emailVerified": true, "firstName": "zozzy", "lastName": "User", "credentials": [ { "type": "password", "value": "zeina", "temporary": false } ] },
+        { "username": "zoz", "enabled": true, "email": "zoz@example.com", "emailVerified": true, "firstName": "zoz", "lastName": "User", "credentials": [ { "type": "password", "value": "zoz", "temporary": false } ] },
+        { "username": "zeonz", "enabled": true, "email": "zeonz@example.com", "emailVerified": true, "firstName": "zeonz", "lastName": "User", "credentials": [ { "type": "password", "value": "haha", "temporary": false } ] },
+        { "username": "test4", "enabled": true, "email": "test4@example.com", "emailVerified": true, "firstName": "test4", "lastName": "User", "credentials": [ { "type": "password", "value": "passyay", "temporary": false } ] },
+        { "username": "test6", "enabled": true, "email": "test6@example.com", "emailVerified": true, "firstName": "test6", "lastName": "User", "credentials": [ { "type": "password", "value": "test6", "temporary": false } ] },
+        { "username": "test10", "enabled": true, "email": "test10@example.com", "emailVerified": true, "firstName": "test10", "lastName": "User", "credentials": [ { "type": "password", "value": "koko", "temporary": false } ] },
+        { "username": "zonsdf", "enabled": true, "email": "zonsdf@example.com", "emailVerified": true, "firstName": "zonsdf", "lastName": "User", "credentials": [ { "type": "password", "value": "haha", "temporary": false } ] },
+        { "username": "ay 7aga", "enabled": true, "email": "ay 7aga@example.com", "emailVerified": true, "firstName": "ay 7aga", "lastName": "User", "credentials": [ { "type": "password", "value": "blabla", "temporary": false } ] },
+        { "username": "ziad", "enabled": true, "email": "ziad@example.com", "emailVerified": true, "firstName": "ziad", "lastName": "User", "credentials": [ { "type": "password", "value": "koko", "temporary": false } ] },
+        { "username": "haha", "enabled": true, "email": "haha@example.com", "emailVerified": true, "firstName": "haha", "lastName": "User", "credentials": [ { "type": "password", "value": "heho", "temporary": false } ] },
+        { "username": "file1", "enabled": true, "email": "file1@example.com", "emailVerified": true, "firstName": "file1", "lastName": "User", "credentials": [ { "type": "password", "value": "file1", "temporary": false } ] },
+        { "username": "file2", "enabled": true, "email": "file2@example.com", "emailVerified": true, "firstName": "file2", "lastName": "User", "credentials": [ { "type": "password", "value": "file2", "temporary": false } ] },
+        { "username": "FILE3", "enabled": true, "email": "FILE3@example.com", "emailVerified": true, "firstName": "FILE3", "lastName": "User", "credentials": [ { "type": "password", "value": "FILE3", "temporary": false } ] },
+        { "username": "ya3am", "enabled": true, "email": "ya3am@example.com", "emailVerified": true, "firstName": "ya3am", "lastName": "User", "credentials": [ { "type": "password", "value": "t3bt", "temporary": false } ] },
+        { "username": "FILE5", "enabled": true, "email": "FILE5@example.com", "emailVerified": true, "firstName": "FILE5", "lastName": "User", "credentials": [ { "type": "password", "value": "file5", "temporary": false } ] },
+        { "username": "file6", "enabled": true, "email": "file6@example.com", "emailVerified": true, "firstName": "file6", "lastName": "User", "credentials": [ { "type": "password", "value": "file6", "temporary": false } ] }
+      ]
+    }

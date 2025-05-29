@@ -14,26 +14,26 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: frontend-image:latest
+          image: ms-frontend:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 3000
           env:
             - name: KEYCLOAK_URL
-              value: http://keycloak:8081
+              value: http://localhost/auth
             - name: BACKEND_URL
-              value: http://backend:8080
+              value: http://ms-backend:8080
           volumeMounts:
             - name: config-volume
-              mountPath: /usr/share/nginx/html/config.json
+              mountPath: /app/static/config.json
               subPath: config.json
             - name: keycloak-volume
-              mountPath: /usr/share/nginx/html/keycloak.json
+              mountPath: /app/static/keycloak.json
               subPath: keycloak.json
       volumes:
         - name: config-volume
           configMap:
             name: frontend-config
         - name: keycloak-volume
-            configMap:
-              name: frontend-keycloak
+          configMap:
+            name: frontend-keycloak

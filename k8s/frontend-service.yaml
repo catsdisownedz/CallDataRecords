@@ -7,6 +7,6 @@ spec:
   selector:
     app: frontend
   ports:
-    - port: 8080        # Kubernetes external port
+    - port: 8080        # Expose on NodePort
       targetPort: 3000  # Container’s internal port
-      nodePort: 30080   # Minikube / external NodePort
+      nodePort: 30080   # External NodePort

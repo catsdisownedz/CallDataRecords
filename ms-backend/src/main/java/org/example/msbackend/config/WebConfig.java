@@ -10,7 +10,8 @@ public class WebConfig {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         // ✅ Read FRONTEND_URL from env, fallback to localhost:8080
-        String frontendUrl = System.getenv().getOrDefault("FRONTEND_URL", "http://localhost:8080");
+        String frontendUrl = System.getenv().getOrDefault("FRONTEND_URL", "http://localhost");
+
 
         return new WebMvcConfigurer() {
             @Override

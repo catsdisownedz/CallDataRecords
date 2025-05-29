@@ -12,6 +12,7 @@ spec:
       labels:
         app: nginx-proxy
     spec:
+      dnsPolicy: ClusterFirst  # ✅ This ensures Kubernetes DNS works inside the pod
       containers:
         - name: nginx
           image: nginx:latest

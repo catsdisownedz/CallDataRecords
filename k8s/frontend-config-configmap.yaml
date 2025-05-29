@@ -6,5 +6,5 @@ data:
   config.json: |
     {
       "KEYCLOAK_URL": "http://localhost/auth",
-      "BACKEND_URL": "http://localhost/api"
+      "BACKEND_URL": "http://ms-backend:8080"
     }
