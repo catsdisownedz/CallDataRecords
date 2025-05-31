@@ -2,26 +2,88 @@ let keycloak;
 let fullData = [];
 let pollingInterval;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper: Decode a JWT payload so we can extract "preferred_username" after signup.
+// (We only need this on the frontend to show "Welcome, X".)
+//─────────────────────────────────────────────────────────────────────────────
+function parseJwt(token) {
+    // Split into header.payload.signature
+    const base64Url = token.split('.')[1];
+    const base64    = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split('')
+            .map(c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join('')
+    );
+    return JSON.parse(jsonPayload);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// On window.load, we load config.json and then decide: “Is this the signup page?”
+//
+// If it is the signup form, wire up initSignupForm() as before.
+// Otherwise, check localStorage for an existing token. If we find one,
+// skip Keycloak’s forced redirect and start polling immediately. If not,
+// fall back to initKeycloak() which uses onLoad: 'login-required'.
+//─────────────────────────────────────────────────────────────────────────────
 window.onload = async function () {
     try {
+        // 1) Load config.json exactly as before
         const config = await fetch('config.json').then(r => r.json());
         window.KEYCLOAK_URL = config.KEYCLOAK_URL;
-        window.BACKEND_URL = config.BACKEND_URL;
-
+        window.BACKEND_URL  = config.BACKEND_URL;
         console.log('✅ Loaded config:', config);
 
+        // 2) If we are on the signup page (i.e. #signup-form exists), set up signup logic:
         const form = document.getElementById('signup-form');
         if (form) {
             initSignupForm();
-        } else {
-            await initKeycloak();
-            startPolling(); // 🆕 Start live polling after auth
+            return;
         }
-    } catch (error) {
-        console.error('❌ Failed to load config.json', error);
+
+        // 3) Otherwise, we are on “/” (the index.html with CDR table). Check for a stored token:
+        const storedToken   = localStorage.getItem('cdr-token');
+        const storedRefresh = localStorage.getItem('cdr-refresh');
+
+        if (storedToken) {
+            // ─────────────────────────────────────────────────────────────────────────
+            // The user has just signed up (or previously logged in). They already have
+            // a valid JWT in localStorage. We treat them as authenticated:
+            //
+            //   • Decode the token payload to get their username.
+            //   • Show “Welcome, username” in the UI.
+            //   • Store `window.token = storedToken` so our fetch calls can use it.
+            //   • Start polling immediately (skip Keycloak redirect).
+            //─────────────────────────────────────────────────────────────────────────
+            window.token = storedToken; // make it global for fetchAndUpdate
+
+            const parsed   = parseJwt(storedToken);
+            const username = parsed.preferred_username || 'User';
+            document.getElementById('welcome-message').innerText = `Welcome, ${username}`;
+
+            // Show the live-dot, and begin polling
+            startPolling();
+            return;
+        }
+
+        // 4) If no stored token, we fall back to the normal Keycloak adapter:
+        await initKeycloak();
+        startPolling(); // after Keycloak init, begin polling
+    }
+    catch (error) {
+        console.error('❌ Failed to load config.json or initialize:', error);
     }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// initKeycloak: almost the same as before, except we change `onLoad: 'login-required'`
+// to `onLoad: 'login-required'` only if no token is in localStorage. But since
+// we already returned early when token exists, we can keep it as-is. After `init()`,
+// we store the token in localStorage and set the welcome message.
+//─────────────────────────────────────────────────────────────────────────────
 async function initKeycloak() {
     const keycloakConfig = {
         url: window.KEYCLOAK_URL,
@@ -31,16 +93,26 @@ async function initKeycloak() {
 
     keycloak = new Keycloak(keycloakConfig);
 
+    // Force Keycloak login if no SSO session is active:
     await keycloak.init({
         onLoad: 'login-required',
         checkLoginIframe: false
     });
 
     if (keycloak.authenticated) {
-        localStorage.setItem("cdr-token", keycloak.token);
-        const username = keycloak.tokenParsed?.preferred_username || "User";
+        // 1) Save tokens so that a page refresh can pick them up:
+        localStorage.setItem('cdr-token', keycloak.token);
+        localStorage.setItem('cdr-refresh', keycloak.refreshToken);
+
+        // 2) Pull out username from tokenParsed:
+        const username = keycloak.tokenParsed?.preferred_username || 'User';
         document.getElementById('welcome-message').innerText = `Welcome, ${username}`;
+
+        // 3) Ensure our global window.token is set, so fetchAndUpdate picks it up:
+        window.token = keycloak.token;
     } else {
+        // (In practice, 'login-required' should redirect to login if not authenticated.)
+        console.warn('Keycloak not authenticated—forcing login.');
         keycloak.login();
     }
 }
@@ -54,7 +126,8 @@ function startPolling() {
 
 // 🆕 Fetch latest CDRs and update UI
 async function fetchAndUpdate() {
-    const token = keycloak.token;
+    // Choose the token from keycloak.adapter or fallback to locally stored token
+    const token = (keycloak && keycloak.token) ? keycloak.token : window.token;
     const statusEl = document.getElementById('status-message');
     statusEl.innerText = 'Receiving from Kafka...';
 
@@ -65,7 +138,7 @@ async function fetchAndUpdate() {
         fullData = await response.json();
         displayCDRs(fullData);
         generateCharts(fullData);
-        updateLastUpdated(); // 🆕
+        updateLastUpdated(); // show “Last updated: …”
         statusEl.innerText = '';
     } catch (error) {
         console.error('❌ Error fetching CDRs:', error);
@@ -218,17 +291,23 @@ function showTemporaryMessage(text) {
     }, 10000);
 }
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// initSignupForm: only minor addition: we already did localStorage here,
+// but removing the extra `window.location.href = '/'` after 2 seconds.
+// We just keep it, because the logic below “window.onload” now picks up localStorage.
+//─────────────────────────────────────────────────────────────────────────────
 function initSignupForm() {
     const form = document.getElementById('signup-form');
-    const msg = document.getElementById('message');
+    const msg  = document.getElementById('message');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
 
-        msg.innerText = "ℹ️ Please wait...";
-        msg.className = "info";
+        msg.innerText = 'ℹ️ Please wait…';
+        msg.className = 'info';
 
         try {
             const response = await fetch(`${window.BACKEND_URL}/api/signup`, {
@@ -238,27 +317,37 @@ function initSignupForm() {
             });
 
             if (response.ok) {
+                // 1) backend returns { access_token, refresh_token }
                 const tokens = await response.json();
-                localStorage.setItem("cdr-token", tokens.access_token);
-                localStorage.setItem("cdr-refresh", tokens.refresh_token);
-                msg.innerText = "✅ Signup successful!";
-                msg.className = "success";
-                animateRedirectMessage("Created user, skipping login, redirecting to CDRs", "redirect-signup");
+                localStorage.setItem('cdr-token'   , tokens.access_token);
+                localStorage.setItem('cdr-refresh' , tokens.refresh_token);
+
+                msg.innerText = '✅ Signup successful!';
+                msg.className = 'success';
+
+                // 2) Show a little “redirecting…” animation and then go to “/”
+                animateRedirectMessage(
+                    'Created user, skipping login, redirecting to CDRs',
+                    'redirect-signup'
+                );
                 setTimeout(() => {
-                    window.location.href = "/";
+                    // When we land on "/", our window.onload sees localStorage.token and starts polling.
+                    window.location.href = '/';
                 }, 2000);
-            } else {
+            }
+            else {
                 const result = await response.text();
                 msg.innerText = result;
-                msg.className = "error";
+                msg.className = 'error';
             }
         } catch (error) {
             console.error('Signup error:', error);
-            msg.innerText = "❌ Signup failed: " + error.message;
-            msg.className = "error";
+            msg.innerText = '❌ Signup failed: ' + error.message;
+            msg.className = 'error';
         }
     });
 }
+
 
 function animateRedirectMessage(message, elementId) {
     const el = document.getElementById(elementId);
@@ -278,12 +367,28 @@ function animateRedirectMessage(message, elementId) {
 }
 
 document.getElementById('logout-btn').onclick = () => {
+    // 1) Always remove tokens from localStorage
+    localStorage.removeItem('cdr-token');
+    localStorage.removeItem('cdr-refresh');
+
+    // 2) Show the “Redirecting to login page…” message immediately
     const msg = document.getElementById('redirect-msg');
     msg.style.display = 'block';
+
+    // 3) After a short delay, either call keycloak.logout (if it exists),
+    //    or else just reload “/” so that initKeycloak() runs on the next load.
     setTimeout(() => {
-        keycloak.logout({ redirectUri: window.location.origin });
+        if (keycloak) {
+            // If we previously initialized Keycloak, terminate its session and redirect.
+            keycloak.logout({ redirectUri: window.location.origin });
+        } else {
+            // If keycloak is undefined (we only used localStorage), reload “/”
+            // so your onload() sees no token and forces login.
+            window.location.href = '/';
+        }
     }, 2000);
 };
+
 
 document.getElementById('filter-by').onchange = function () {
     const serviceDropdown = document.getElementById('service-type-filter');
