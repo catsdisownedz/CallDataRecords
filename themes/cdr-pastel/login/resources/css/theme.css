@@ -1,30 +1,31 @@
-/* Hide the realm text/logo */
+/* ====== Hide the Keycloak realm text/logo (unchanged) ====== */
 .kc-logo,
 .kc-logo-text {
     display: none;
 }
 
-/* Center container title */
+/* ====== Center container title (moved much lower) ====== */
 .kc-login-title-container {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 100px;              /* ↑ was 20px; now pushed down */
 }
 
-/* Title styling */
+/* ====== Title styling (explicit size to match signup) ====== */
 .kc-login-title {
     font-family: 'WDXL Lubrifont TC', sans-serif;
     color: #d67ba8;
     margin: 0;
+    font-size: 2rem;                /* ↑ explicitly set */
 }
 
-/* Entire page font */
+/* ====== Entire page font + background (unchanged) ====== */
 body {
     background: linear-gradient(135deg, #fce4ec, #f3e5f5);
     font-family: 'WDXL Lubrifont TC', sans-serif;
     color: #333;
 }
 
-/* Form box */
+/* ====== Form box (unchanged dimensions) ====== */
 .kc-form-login {
     width: 400px;
     margin: 20px auto 0;
@@ -35,7 +36,7 @@ body {
     border: 2px solid #f7cde3;
 }
 
-/* Inputs */
+/* ====== Inputs (unchanged) ====== */
 .input-field {
     width: 90%;
     padding: 12px;
@@ -45,7 +46,7 @@ body {
     font-size: 14px;
 }
 
-/* Button */
+/* ====== Submit button (unchanged) ====== */
 .login-button {
     width: 100%;
     background: #ee92c3;
@@ -62,11 +63,14 @@ body {
     background: #e877ad;
 }
 
-/* Signup link */
+/* ====== “Don’t have an account? Sign up” link (moved & larger) ====== */
 .signup-link {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 30px;              /* ↑ push it farther down */
     color: #4b0082;
+}
+.signup-link p {
+    font-size: 1.1rem;              /* ↑ make link text a bit bigger */
 }
 .signup-link a {
     color: #ff69b4;
@@ -76,7 +80,7 @@ body {
     text-decoration: underline;
 }
 
-/* Redirect message */
+/* ====== Redirect message (unchanged) ====== */
 .redirect-message {
     margin-top: 15px;
     font-size: 1.1em;

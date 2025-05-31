@@ -21,10 +21,19 @@
 
 <main>
     <button id="logout-btn">🚪 Logout</button>
-    <p id="status-message" class="status-message">Receiving from Kafka...</p>
+
+    <!-- ─── STATUS CONTAINER ──────────────── -->
+    <div id="status-container" class="status-container">
+        <span id="live-dot" class="live-dot" style="display: none;"></span>
+        <p id="status-message" class="status-message"></p>
+    </div>
+    <!-- ──────────────────────────────────── -->
+
     <p id="last-updated" class="last-updated">Last updated: never</p>
-    <span id="live-dot" class="live-dot"></span>
-    <p id="redirect-msg" style="display:none; color: hotpink; font-style: italic;">Redirecting to login page...</p>
+    <span id="redirect-msg" style="display:none; color: hotpink; font-style: italic;">
+        Redirecting to login page...
+    </span>
+
     <section class="filter-section">
         <label for="filter-by">Filter Records By:</label>
         <select id="filter-by" class="pink-select">
@@ -74,7 +83,9 @@
     </section>
 
     <div style="text-align: right; margin: 10px 0;">
-        <p id="info-message" class="info-message" style="display:none; color: #d12c7f; font-weight: bold;">DATA removed because all its BNUM are null.</p>
+        <p id="info-message" class="info-message" style="display:none; color: #d12c7f; font-weight: bold;">
+            DATA removed because all its BNUM are null.
+        </p>
     </div>
 
     <section>

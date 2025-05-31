@@ -1,9 +1,12 @@
+/* ====== Fonts for Index Page ====== */
 h1, h2, th {
     font-family: "Pixelify Sans", sans-serif;
 }
- body {
-     font-family: "WDXL Lubrifont TC", sans-serif;
- }
+body {
+    font-family: "WDXL Lubrifont TC", sans-serif;
+}
+
+/* ====== Pink‐style Selects & Buttons ====== */
 .pink-select, .pink-button {
     padding: 6px 12px;
     margin: 5px;
@@ -13,35 +16,47 @@ h1, h2, th {
     border-radius: 5px;
     cursor: pointer;
 }
-
 .pink-button:hover {
     background-color: #d46ba3;
 }
 
+/* ====== Table Styling ====== */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
 }
-
 table, th, td {
     border: 1px solid #ddd;
 }
-
 th, td {
     padding: 8px;
     text-align: left;
 }
-
 thead {
     background-color: #ee92c3;
     color: white;
 }
-
 tbody tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
+/* ====== Fade‐in Animation for New Rows ====== */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+tbody tr.new-row {
+    animation: fadeInDown 0.5s ease-in-out;
+}
+
+/* ====== Preformatted Blocks ====== */
 pre {
     background: #fafafa;
     border: 1px solid #ddd;
@@ -50,12 +65,13 @@ pre {
     overflow-x: auto;
 }
 
-
+/* ====== Centered Sections ====== */
 .centered {
     text-align: center;
     margin-top: 20px;
 }
 
+/* ====== Login‐Box Placeholder (if ever used) ====== */
 .login-box {
     width: 300px;
     margin: 30px auto;
@@ -65,7 +81,6 @@ pre {
     background: #fdfdfd;
     text-align: center;
 }
-
 .login-box button {
     padding: 10px 20px;
     font-size: 1em;
@@ -76,6 +91,7 @@ pre {
     cursor: pointer;
 }
 
+/* ====== Logout Button (Index Only) ====== */
 button#logout-btn {
     float: right;
     margin: 10px;
@@ -86,115 +102,117 @@ button#logout-btn {
     border-radius: 6px;
     cursor: pointer;
 }
-
 button#logout-btn:hover {
     background: #d46ba3;
 }
 
+/* ====== Pink Container Box ====== */
 .pink-box {
     border: 1px solid #ee92c3;
-    padding: 15px;
-    margin-top: 20px;
+    padding: 10px;           /* reduced padding */
+    margin-top: 15px;
     border-radius: 10px;
     margin-bottom: 10px;
-    padding-bottom: 50px;
-    min-height: 400px;
+    padding-bottom: 20px;    /* reduce bottom padding */
+    min-height: auto;        /* allow box to shrink with content */
+    background: #ffeef5;     /* optional: very light pink background */
 }
 
+/* ====== Chart Layout (Smaller Charts) ====== */
 .chart-container {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;               /* slightly tighter gap */
 }
-
 .chart-block {
-    flex: 1 1 22%;
+    flex: 1 1 18%;          /* each block roughly 18% width (smaller than 22%) */
     text-align: center;
-    padding-bottom: 40px;
+    padding-bottom: 20px;   /* reduce padding under each chart */
 }
-
 .chart-block canvas {
     max-width: 100%;
-    height: auto;
+    height: 150px;          /* fix a smaller height */
     background: #fff0f5;
     border-radius: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;    /* tighter bottom margin */
 }
-
 .chart-info {
     font-family: 'Courier New', monospace;
-    font-size: 0.9em;
-    margin-top: 8px;
-    padding: 5px 0;
-    min-height: 35px; /* added height */
+    font-size: 0.8em;       /* slightly smaller font */
+    margin-top: 6px;
+    padding: 4px 0;
+    min-height: 30px;       /* reduce height for info text */
     color: #555;
 }
 
-.chart-container canvas {
-    max-width: 100%;
-    max-height: 200px;
-    width: 100%;
-    height: auto;
-    background: #fff0f5;
-    border-radius: 8px;
-}
-
+/* ====== Table‐Scroll Wrapper ====== */
 .table-scroll {
     overflow-x: auto;
     max-width: 100%;
     scrollbar-width: thin;
     scrollbar-color: #ee92c3 lightcoral;
 }
-
 .table-scroll::-webkit-scrollbar {
-    height: 8px;
+    height: 6px;            /* slightly smaller scrollbar */
 }
-
 .table-scroll::-webkit-scrollbar-thumb {
     background-color: #ee92c3;
     border-radius: 4px;
 }
+
+/* ====== Titles (Index Only) ====== */
 .pixelify-title {
     font-family: "Pixelify Sans", sans-serif;
     font-weight: 600;
+    font-size: 1.2rem;      /* slightly smaller title font */
 }
 
+/* ====== Welcome Message ====== */
 .welcome-message {
     font-family: "WDXL Lubrifont TC", sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.6rem;      /* slightly smaller welcome text */
     color: #c95fcc;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
+/* ====== Info / Status Text ====== */
 .info-message {
     text-align: right;
     margin-right: 20px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;      /* tiny reduce */
 }
 
-.status-message {
+/* ====== STATUS CONTAINER (always reserve space) ====== */
+.status-container {
+    display: flex;
+    align-items: center;
+    min-height: 1.5rem;     /* Reserve vertical space so layout doesn’t jump */
+    margin-bottom: 4px;     /* Small gap below the status container */
+}
+.status-container .status-message {
+    margin: 0;           /* Reset default <p> margins */
     font-size: 0.9rem;
     color: #d46ba3;
-    margin: 5px 0;
 }
-
-.last-updated {
-    font-size: 0.8rem;
-    color: #777;
-    margin: 5px 0;
-}
-
-.live-dot {
-    width: 12px;
-    height: 12px;
+.status-container .live-dot {
+    width: 10px;         /* slightly smaller dot */
+    height: 10px;
     background-color: #ee92c3;
     border-radius: 50%;
-    display: inline-block;
-    margin-left: 10px;
+    display: none;       /* Hidden by default; JS toggles display:inline-block */
+    margin-right: 6px;   /* Space between dot and text */
     animation: pulse 1.5s infinite;
 }
 
+/* ====== Last Updated (a bit more spacing) ====== */
+.last-updated {
+    font-size: 0.75rem;    /* reduce font */
+    color: #777;
+    margin: 6px 0;         /* tighten margins */
+}
+
+/* ====== Pulse Animation for Live Dot ====== */
 @keyframes pulse {
     0% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.5); opacity: 0.5; }

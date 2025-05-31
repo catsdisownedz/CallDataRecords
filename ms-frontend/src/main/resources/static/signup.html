@@ -1,86 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="/styles.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #fce4ec, #f3e5f5);
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .signup-container {
-            width: 400px;
-            margin: 60px auto;
-            padding: 30px;
-            background: #fff0f5;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: 2px solid #f7cde3;
-            text-align: center;
-        }
-        .signup-container h2 {
-            margin-bottom: 25px;
-            color: #d67ba8;
-            font-family: 'Courier New', monospace;
-        }
-        .signup-container input {
-            display: block;
-            width: 90%;
-            padding: 12px;
-            margin: 12px auto;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 14px;
-        }
-        .signup-container button {
-            width: 100%;
-            background-color: #ee92c3;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-            transition: background 0.3s ease;
-        }
-        .signup-container button:hover {
-            background-color: #e877ad;
-        }
-        #message {
-            margin-top: 15px;
-            font-size: 0.95em;
-        }
-        .success { color: #46a36c; }
-        .error { color: #e05a5a; }
-        .info { color: #888; }
+    <meta charset="UTF-8" />
+    <title>Sign Up – Call Data Records</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        .redirect-message {
-            margin-top: 15px;
-            font-size: 0.95em;
-            color: #888;
-            font-style: italic;
-        }
-    </style>
+    <!-- Google Fonts (must match Login page) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=WDXL+Lubrifont+TC&display=swap"
+            rel="stylesheet"
+    />
+
+    <!-- This is your existing signup-only CSS -->
+    <link rel="stylesheet" href="/signup.css" />
 </head>
 <body>
-<div class="signup-container">
-    <h2 style="font-family: 'Courier New', monospace; color: #d67ba8;">Sign up for Call Data Records</h2>
-    <form id="signup-form">
-        <input type="text" id="username" placeholder="Username" required />
-        <input type="password" id="password" placeholder="Password" required />
-        <button type="submit">Sign Up</button>
-    </form>
-    <p id="message"></p>
-    <p class="redirect-message" id="redirect-signup" style="display: none;"></p>
+<!-- Title Container (same as your login page) -->
+<div class="kc-login-title-container">
+    <h2 class="kc-login-title">Sign Up for Call Data Records</h2>
 </div>
 
+<!--
+  The only “action” here is javascript:void(0), so the native browser never
+  makes a form-encoded POST. As soon as the DOM loads, scripts.js’s
+  initSignupForm() will hook into this form, do `e.preventDefault()`, and
+  POST JSON via fetch().
+-->
+<form
+        id="signup-form"
+        class="kc-form-login"
+        action="javascript:void(0);"
+        method="post"
+>
+    <div class="kc-form-group">
+        <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Username"
+                class="input-field"
+                autofocus
+                autocomplete="username"
+        />
+    </div>
+    <div class="kc-form-group">
+        <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                class="input-field"
+        />
+    </div>
+    <div class="kc-form-group">
+        <button type="submit" id="kc-signup" class="login-button">
+            Sign Up
+        </button>
+    </div>
 
+    <!-- Feedback goes here: “Please wait…”, “✅ Signup successful!”, or errors -->
+    <div id="message" class="message"></div>
+</form>
+
+<!-- “Already have an account? Log in” link -->
+<div class="signup-link">
+    <p>
+        Already have an account?
+        <a href="/login.html">Log in</a>
+    </p>
+</div>
+
+<!-- This invisible <p> is toggled by scripts.js to show “Redirecting…” animation -->
+<p class="redirect-message" id="redirect-signup" style="display: none;"></p>
+
+<!--
+  Load your shared scripts.js (which already contains initSignupForm, etc.)
+  Make sure this script is served at /scripts.js in your static resources.
+-->
 <script src="/scripts.js"></script>
 </body>
 </html>

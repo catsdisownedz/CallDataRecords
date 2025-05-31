@@ -1,0 +1,90 @@
+/* ====== Hide Keycloak realm text/logo (identical to Login) ====== */
+.kc-logo,
+.kc-logo-text {
+    display: none;
+}
+
+/* ====== Center container title (moved much lower) ====== */
+.kc-login-title-container {
+    text-align: center;
+    margin-top: 100px;              /* ↑ was 20px; now pushed down */
+}
+
+/* ====== Title styling (same as Login, with explicit size) ====== */
+.kc-login-title {
+    font-family: 'WDXL Lubrifont TC', sans-serif;
+    color: #d67ba8;
+    margin: 0;
+    font-size: 2rem;                /* ↑ explicitly set to match Login */
+}
+
+/* ====== Entire page font + background (exactly as Login) ====== */
+body {
+    background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+    font-family: 'WDXL Lubrifont TC', sans-serif;
+    color: #333;
+}
+
+/* ====== Form box styling (identical to Login form) ====== */
+.kc-form-login {
+    width: 400px;                   /* same width */
+    margin: 20px auto 0;            /* centered horizontally, top margin stays 20px */
+    padding: 30px;                  /* same padding */
+    background: #fff0f5;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #f7cde3;
+}
+
+/* ====== Input fields (same as Login) ====== */
+.input-field {
+    width: 90%;
+    padding: 12px;
+    margin: 12px auto;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+/* ====== Submit button (identical to Login button) ====== */
+.login-button {
+    width: 100%;
+    background: #ee92c3;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.login-button:hover {
+    background: #e877ad;
+}
+
+/* ====== “Already have an account? Log in” link (moved & larger) ====== */
+.signup-link {
+    text-align: center;
+    margin-top: 30px;              /* ↑ increased spacing from form */
+    color: #4b0082;
+}
+.signup-link p {
+    font-size: 1.1rem;              /* ↑ made font a bit bigger */
+}
+.signup-link a {
+    color: #ff69b4;
+    text-decoration: none;
+}
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+/* ====== Redirect message (identical to Login) ====== */
+.redirect-message {
+    margin-top: 15px;
+    font-size: 1.1em;
+    color: #555;
+    text-align: center;
+    font-style: italic;
+}
