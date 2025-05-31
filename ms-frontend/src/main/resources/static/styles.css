@@ -172,3 +172,31 @@ button#logout-btn:hover {
     margin-right: 20px;
     font-size: 0.95rem;
 }
+
+.status-message {
+    font-size: 0.9rem;
+    color: #d46ba3;
+    margin: 5px 0;
+}
+
+.last-updated {
+    font-size: 0.8rem;
+    color: #777;
+    margin: 5px 0;
+}
+
+.live-dot {
+    width: 12px;
+    height: 12px;
+    background-color: #ee92c3;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 10px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}

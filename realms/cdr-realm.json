@@ -302,5 +302,50 @@
           "temporary": false
         }
       ]
+    },
+    {
+      "username": "test2304",
+      "enabled": true,
+      "email": "test2304@example.com",
+      "emailVerified": true,
+      "firstName": "test2304",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "zh2t",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "zeko",
+      "enabled": true,
+      "email": "zeko@example.com",
+      "emailVerified": true,
+      "firstName": "zeko",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "zozo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "awaw",
+      "enabled": true,
+      "email": "awaw@example.com",
+      "emailVerified": true,
+      "firstName": "awaw",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "yay",
+          "temporary": false
+        }
+      ]
     }]
 }

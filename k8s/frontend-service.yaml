@@ -9,4 +9,4 @@ spec:
   ports:
     - port: 8080        # Expose on NodePort
       targetPort: 3000  # Container’s internal port
-      nodePort: 30080   # External NodePort
+      nodePort: 30082   # External NodePort

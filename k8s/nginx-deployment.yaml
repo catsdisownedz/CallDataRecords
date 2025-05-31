@@ -12,17 +12,30 @@ spec:
       labels:
         app: nginx-proxy
     spec:
-      dnsPolicy: ClusterFirst  # ✅ This ensures Kubernetes DNS works inside the pod
+      dnsPolicy: ClusterFirst
       containers:
         - name: nginx
           image: nginx:latest
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: nginx-config
+            - name: config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+            - name: static
+              mountPath: /usr/share/nginx/html/loading.html
+              subPath: loading.html
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
       volumes:
-        - name: nginx-config
+        - name: config
           configMap:
             name: nginx-config
+        - name: static
+          configMap:
+            name: nginx-static

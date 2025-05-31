@@ -24,4 +24,8 @@ public class CDRConsumer {
         logger.info("📥 Received CDR from Kafka: {}", cdr);
         cdrService.saveCDR(cdr); // store into MySQL
     }
+
+
 }
+
+

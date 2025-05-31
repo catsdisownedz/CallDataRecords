@@ -1,9 +1,21 @@
 <#-- Extend default login layout -->
 <#import "template.ftl" as layout>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=WDXL+Lubrifont+TC&display=swap" rel="stylesheet">
+
+<!-- Your theme CSS -->
 <link rel="stylesheet" type="text/css" href="${url.resourcesPath}/css/theme.css">
+
 <@layout.registrationLayout displayInfo=true; section>
     <#if section == "header">
-        <h2 style="font-family: 'Courier New', monospace;">Log in to Call Data Records</h2>
+        <!-- Centered title -->
+        <div class="kc-login-title-container">
+            <h2 class="kc-login-title">Log in to Call Data Records</h2>
+        </div>
+
     <#elseif section == "form">
         <form id="kc-form-login" class="kc-form-login" action="${url.loginAction}" method="post">
             <div class="kc-form-group">
@@ -12,35 +24,32 @@
             <div class="kc-form-group">
                 <input type="password" id="password" name="password" placeholder="Password" class="input-field" autocomplete="current-password"/>
             </div>
-
             <div class="kc-form-group">
                 <input type="submit" id="kc-login" class="login-button" value="Login"/>
             </div>
         </form>
+
         <#if message?has_content>
             <div class="message ${message.type}">${message.summary}</div>
         </#if>
+
         <div class="signup-link">
-            <p>Don’t have an account? <a href="http://localhost:8080/signup.html">Sign up</a></p>
+            <p>Don’t have an account? <a href="/signup.html">Sign up</a></p>
         </div>
+
         <p class="redirect-message" id="redirect-login" style="display: none;"></p>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const form = document.getElementById('kc-form-login');
-                form.addEventListener('submit', function (e) {
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('kc-form-login').addEventListener('submit', () => {
                     const redirectEl = document.getElementById('redirect-login');
                     redirectEl.style.display = 'block';
-                    let baseMessage = 'Redirecting to CDRs';
-                    let counter = 0;
+                    let dots = '';
                     const interval = setInterval(() => {
-                        let dots = '.'.repeat(counter % 4);
-                        redirectEl.textContent = baseMessage + dots;
-                        counter++;
+                        dots = dots.length < 3 ? dots + '.' : '';
+                        redirectEl.textContent = 'Redirecting to CDRs' + dots;
                     }, 300);
-                    setTimeout(() => {
-                        clearInterval(interval);
-                    }, 3000);
+                    setTimeout(() => clearInterval(interval), 3000);
                 });
             });
         </script>

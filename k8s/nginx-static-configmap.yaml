@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-static
+data:
+  loading.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Starting Up…</title>
+      <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 20%; }
+        h1 { color: #555; }
+      </style>
+    </head>
+    <body>
+      <h1>🔧 Application is starting, please wait…</h1>
+      <p>We’ll be ready in a few seconds.</p>
+      <script>
+        // retry every 5s
+        setTimeout(() => location.reload(), 5000);
+      </script>
+    </body>
+    </html>

@@ -1,26 +1,41 @@
+/* Hide the realm text/logo */
+.kc-logo,
+.kc-logo-text {
+    display: none;
+}
+
+/* Center container title */
+.kc-login-title-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Title styling */
+.kc-login-title {
+    font-family: 'WDXL Lubrifont TC', sans-serif;
+    color: #d67ba8;
+    margin: 0;
+}
+
+/* Entire page font */
 body {
     background: linear-gradient(135deg, #fce4ec, #f3e5f5);
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'WDXL Lubrifont TC', sans-serif;
     color: #333;
 }
 
+/* Form box */
 .kc-form-login {
     width: 400px;
-    margin: 60px auto;
+    margin: 20px auto 0;
     padding: 30px;
     background: #fff0f5;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     border: 2px solid #f7cde3;
-    text-align: center;
 }
 
-.kc-login-title {
-    font-family: 'Courier New', monospace;
-    color: #d67ba8;
-    margin-bottom: 20px;
-}
-
+/* Inputs */
 .input-field {
     width: 90%;
     padding: 12px;
@@ -30,26 +45,42 @@ body {
     font-size: 14px;
 }
 
+/* Button */
 .login-button {
     width: 100%;
     background: #ee92c3;
-    color: white;
+    color: #fff;
     border: none;
     padding: 12px;
     border-radius: 6px;
-    cursor: pointer;
     font-weight: bold;
     font-size: 15px;
+    cursor: pointer;
     transition: background 0.3s ease;
 }
-
 .login-button:hover {
     background: #e877ad;
 }
 
+/* Signup link */
+.signup-link {
+    text-align: center;
+    margin-top: 15px;
+    color: #4b0082;
+}
+.signup-link a {
+    color: #ff69b4;
+    text-decoration: none;
+}
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+/* Redirect message */
 .redirect-message {
     margin-top: 15px;
-    font-size: 0.95em;
-    color: #888;
+    font-size: 1.1em;
+    color: #555;
+    text-align: center;
     font-style: italic;
 }

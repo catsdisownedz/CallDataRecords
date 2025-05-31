@@ -12,14 +12,28 @@ spec:
       labels:
         app: loader
     spec:
+      volumes:
+        - name: users-data
+          persistentVolumeClaim:
+            claimName: users-data-pvc
+
       containers:
         - name: loader
-          image: ms-loader:latest
-          imagePullPolicy: Never
+          image: catsdisownedz8/ms-loader:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
-            - name: KAFKA_SERVERS
-              value: "kafka:9092"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
             - name: BACKEND_URL
               value: http://backend:8080
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: users-data
+              mountPath: /app/data

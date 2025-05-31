@@ -12,18 +12,45 @@ spec:
       labels:
         app: backend
     spec:
+      volumes:
+        # share the same users.csv
+        - name: users-data
+          persistentVolumeClaim:
+            claimName: users-data-pvc
+
       containers:
         - name: backend
-          image: ms-backend:latest
-          imagePullPolicy: Never
+          image: catsdisownedz8/ms-backend:latest
+          workingDir: /app
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
-            - name: KAFKA_SERVERS
-              value: "kafka:9092"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+            - name: SPRING_KAFKA_CONSUMER_GROUP_ID
+              value: backend-group
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/cdrdb
+            - name: SPRING_DATASOURCE_USERNAME
+              value: backend
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: backendpass
             - name: KEYCLOAK_URL
-              value: http://keycloak:8081
+              value: http://keycloak:8081/auth
             - name: FRONTEND_URL
-              value: http://localhost
+              value: http://frontend
             - name: BACKEND_URL
               value: http://backend:8080
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            # your code reads/appends /app/data/users.csv
+            - name: users-data
+              mountPath: /app/data

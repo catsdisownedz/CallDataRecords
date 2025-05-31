@@ -6,13 +6,14 @@ data:
   keycloak.json: |
     {
       "realm": "cdr-realm",
-      "auth-server-url": "http://localhost/auth",
+      "auth-server-url": "/auth",
       "ssl-required": "none",
       "resource": "cdr-frontend",
       "public-client": true,
       "confidential-port": 0,
       "redirect_uris": [
         "http://localhost/*",
-        "http://localhost:80/*"
+        "http://localhost:80/*",
+        "http://localhost",
       ]
     }

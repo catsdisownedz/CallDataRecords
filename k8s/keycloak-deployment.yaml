@@ -12,36 +12,58 @@ spec:
       labels:
         app: keycloak
     spec:
+      volumes:
+        # where we’ll write the generated realm.json
+        - name: realm-import
+          emptyDir: {}
+        # your live users.csv
+        - name: users-csv
+          persistentVolumeClaim:
+            claimName: users-data-pvc
+
+      initContainers:
+        - name: realm-generator
+          image: catsdisownedz8/realm-generator:latest
+          command: ["/scripts/generate-realm.sh"]
+          args:
+            - /data/users.csv
+            - /output/cdr-realm.json
+          volumeMounts:
+            - name: users-csv
+              mountPath: /data
+            - name: realm-import
+              mountPath: /output
+
       containers:
         - name: keycloak
-          image: catsdisownedz8/keycloak-custom:latest  # ✅ your custom Docker image with the baked-in theme
+          image: catsdisownedz8/keycloak-custom:latest
           args:
-            [
-              "start-dev",
-              "--import-realm",
-              "--http-port=8081",
-              "--hostname-strict=false",
-              "--hostname-strict-https=false",
-              "--http-relative-path=/auth",
-              "--proxy=edge"
-            ]
+            - start-dev
+            - --import-realm
+            - --http-port=8081
+            - --hostname-strict=false
+            - --hostname-strict-https=false
+            - --http-relative-path=/auth
+            - --proxy=edge
           env:
             - name: KEYCLOAK_ADMIN
-              value: "admin"
+              value: admin
             - name: KEYCLOAK_ADMIN_PASSWORD
-              value: "admin"
+              value: admin
             - name: KC_HTTP_PORT
               value: "8081"
             - name: KEYCLOAK_THEME
-              value: "cdr-pastel"
-            - name: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
-              value: "true"
+              value: cdr-pastel
           ports:
             - containerPort: 8081
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 3
           volumeMounts:
-            - name: realm-volume
-              mountPath: /opt/keycloak/data/import
-      volumes:
-        - name: realm-volume
-          configMap:
-            name: cdr-realm-configmap
+            # import the freshly-generated realm
+            - name: realm-import
+              mountPath: /opt/keycloak/data/import/cdr-realm.json
+              subPath: cdr-realm.json

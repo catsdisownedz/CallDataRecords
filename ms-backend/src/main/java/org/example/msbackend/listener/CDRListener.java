@@ -19,4 +19,7 @@ public class CDRListener {
         cdrRepository.save(cdr);
         System.out.println("✅ CDR received and saved: " + cdr);
     }
+
+    // Example alternate listener if you ever need a full replay
+    //@KafkaListener(topics = "cdr-topic",groupId = "backend-group-replay",containerFactory = "cdrKafkaListenerContainerFactory")
 }

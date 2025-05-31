@@ -1,5 +1,6 @@
 let keycloak;
 let fullData = [];
+let pollingInterval;
 
 window.onload = async function () {
     try {
@@ -14,7 +15,7 @@ window.onload = async function () {
             initSignupForm();
         } else {
             await initKeycloak();
-            fetchData();
+            startPolling(); // 🆕 Start live polling after auth
         }
     } catch (error) {
         console.error('❌ Failed to load config.json', error);
@@ -42,66 +43,46 @@ async function initKeycloak() {
     } else {
         keycloak.login();
     }
-
 }
 
-async function fetchData() {
-    const token = keycloak.token;
-    const response = await fetch(`${window.BACKEND_URL}/api/cdrs`, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-    fullData = await response.json();
-    displayCDRs(fullData);
-    generateCharts(fullData);
+// 🆕 Start polling data from backend every 5 seconds
+function startPolling() {
+    showLiveIndicator(true);
+    fetchAndUpdate();
+    pollingInterval = setInterval(fetchAndUpdate, 5000);
 }
 
-// ✨ FULL no-filter load
-async function loadCDRs() {
+// 🆕 Fetch latest CDRs and update UI
+async function fetchAndUpdate() {
     const token = keycloak.token;
-    const response = await fetch(`${window.BACKEND_URL}/api/cdrs`, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await response.json();
+    const statusEl = document.getElementById('status-message');
+    statusEl.innerText = 'Receiving from Kafka...';
 
-    displayCDRs(data);
-    generateCharts(data);
-}
-
-// ✨ FILTERED load
-async function loadFilteredCDRs({ sort = null, serviceType = null } = {}) {
-    const url = new URL(`${window.BACKEND_URL}/api/cdrs/filtered`);
-    if (sort) url.searchParams.append('sort', sort);
-    if (serviceType) url.searchParams.append('serviceType', serviceType);
-
-    const token = keycloak.token;
-    const response = await fetch(url.toString(), {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-    let data = await response.json();
-
-    const messageEl = document.getElementById('info-message');
-    messageEl.style.display = 'none';
-
-    if (sort === 'bnum') {
-        const hasOnlyNullData = data.filter(cdr => cdr.serviceType === 'DATA').every(cdr => cdr.bnum === null || cdr.bnum === 'null');
-        if (hasOnlyNullData) {
-            data = data.filter(cdr => cdr.serviceType !== 'DATA');
-            showTemporaryMessage("DATA removed because all its BNUM are null.");
-        }
+    try {
+        const response = await fetch(`${window.BACKEND_URL}/api/cdrs`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        fullData = await response.json();
+        displayCDRs(fullData);
+        generateCharts(fullData);
+        updateLastUpdated(); // 🆕
+        statusEl.innerText = '';
+    } catch (error) {
+        console.error('❌ Error fetching CDRs:', error);
+        statusEl.innerText = '❌ Failed to fetch data!';
     }
-
-    displayCDRs(data, serviceType);
-    generateCharts(data);
 }
 
-function showTemporaryMessage(text) {
-    const messageEl = document.getElementById('info-message');
-    messageEl.innerText = text;
-    messageEl.style.display = 'block';
-    messageEl.style.color = '#d12c7f'; // dark pink
-    setTimeout(() => {
-        messageEl.style.display = 'none';
-    }, 10000);
+// 🆕 Show timestamp of last update
+function updateLastUpdated() {
+    const now = new Date();
+    document.getElementById('last-updated').innerText = `Last updated: ${now.toLocaleTimeString()}`;
+}
+
+// 🆕 Show or hide pulsing dot
+function showLiveIndicator(show) {
+    const dot = document.getElementById('live-dot');
+    dot.style.display = show ? 'inline-block' : 'none';
 }
 
 function displayCDRs(data, options = {}) {
@@ -158,8 +139,16 @@ function generateCharts(data) {
 
     const total = counts.call + counts.sms + counts.data;
 
+    const doughnutData = [counts.call, counts.sms, counts.data];
+    const pieData = {
+        call: [counts.call, total - counts.call],
+        sms: [counts.sms, total - counts.sms],
+        data: [counts.data, total - counts.data]
+    };
+
+    // Update or create mostUsedChart
     if (chartInstances['mostUsedChart']) {
-        chartInstances['mostUsedChart'].data.datasets[0].data = [counts.call, counts.sms, counts.data];
+        chartInstances['mostUsedChart'].data.datasets[0].data = doughnutData;
         chartInstances['mostUsedChart'].update();
     } else {
         chartInstances['mostUsedChart'] = new Chart(document.getElementById('mostUsedChart'), {
@@ -167,7 +156,7 @@ function generateCharts(data) {
             data: {
                 labels: ['Call', 'SMS', 'Data'],
                 datasets: [{
-                    data: [counts.call, counts.sms, counts.data],
+                    data: doughnutData,
                     backgroundColor: ['#ffc0cb', '#dda0dd', '#87ceeb'],
                 }]
             },
@@ -175,9 +164,10 @@ function generateCharts(data) {
         });
     }
 
+    // Update or create individual pie charts
     ['call', 'sms', 'data'].forEach(type => {
         if (chartInstances[`${type}Chart`]) {
-            chartInstances[`${type}Chart`].data.datasets[0].data = [counts[type], total - counts[type]];
+            chartInstances[`${type}Chart`].data.datasets[0].data = pieData[type];
             chartInstances[`${type}Chart`].update();
         } else {
             chartInstances[`${type}Chart`] = new Chart(document.getElementById(`${type}Chart`), {
@@ -185,7 +175,7 @@ function generateCharts(data) {
                 data: {
                     labels: [type.toUpperCase(), 'Other'],
                     datasets: [{
-                        data: [counts[type], total - counts[type]],
+                        data: pieData[type],
                         backgroundColor: ['#ee92c3', '#f0f0f0']
                     }]
                 },
@@ -194,6 +184,7 @@ function generateCharts(data) {
         }
     });
 
+    // Update info text
     document.getElementById('mostUsedInfo').innerText =
         `Call: ${counts.call} (${((counts.call / total) * 100 || 0).toFixed(1)}%) | ` +
         `SMS: ${counts.sms} (${((counts.sms / total) * 100 || 0).toFixed(1)}%) | ` +
@@ -215,6 +206,16 @@ function getRandomPastelColor() {
     const g = Math.floor(Math.random() * 256);
     const b = Math.floor(Math.random() * 256);
     return `rgba(${r}, ${g}, ${b}, 0.3)`;
+}
+
+function showTemporaryMessage(text) {
+    const messageEl = document.getElementById('info-message');
+    messageEl.innerText = text;
+    messageEl.style.display = 'block';
+    messageEl.style.color = '#d12c7f';
+    setTimeout(() => {
+        messageEl.style.display = 'none';
+    }, 10000);
 }
 
 function initSignupForm() {
@@ -299,14 +300,12 @@ async function applyFilter() {
     const serviceType = document.getElementById('service-type-filter').value;
     const dateFilter = document.getElementById('date-selector').value;
 
-    // Apply date filter first, update charts
     if (dateFilter === 'today') {
         const today = new Date().toISOString().slice(0, 10);
         data = data.filter(cdr => cdr.startDateTime.startsWith(today));
     }
     generateCharts(data);
 
-    // Apply table filters without changing charts
     if (by === 'id') {
         data.sort((a, b) => a.id - b.id);
     } else if (by === 'anum') {

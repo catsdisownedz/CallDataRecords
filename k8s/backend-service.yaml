@@ -3,8 +3,10 @@ kind: Service
 metadata:
   name: backend
 spec:
+  type: NodePort                      # ← expose it outside the cluster
   selector:
     app: backend
   ports:
     - port: 8080
       targetPort: 8080
+      nodePort: 30080                # ← your choice (30000–32767)
