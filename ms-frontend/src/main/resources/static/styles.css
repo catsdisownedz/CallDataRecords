@@ -109,40 +109,40 @@ button#logout-btn:hover {
 /* ====== Pink Container Box ====== */
 .pink-box {
     border: 1px solid #ee92c3;
-    padding: 10px;           /* reduced padding */
-    margin-top: 15px;
+    padding: 6px;             /* further reduced padding */
+    margin-top: 10px;
     border-radius: 10px;
-    margin-bottom: 10px;
-    padding-bottom: 20px;    /* reduce bottom padding */
-    min-height: auto;        /* allow box to shrink with content */
-    background: #ffeef5;     /* optional: very light pink background */
+    margin-bottom: 8px;
+    padding-bottom: 12px;     /* reduced bottom padding */
+    min-height: auto;         /* allow box to shrink with content */
+    background: #ffeef5;      /* very light pink background */
 }
 
-/* ====== Chart Layout (Smaller Charts) ====== */
+/* ====== Chart Layout (Much Smaller Charts) ====== */
 .chart-container {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 8px;               /* slightly tighter gap */
+    gap: 6px;                 /* tighter gap */
 }
 .chart-block {
-    flex: 1 1 18%;          /* each block roughly 18% width (smaller than 22%) */
+    flex: 1 1 15%;            /* each block ~15% width */
     text-align: center;
-    padding-bottom: 20px;   /* reduce padding under each chart */
+    padding-bottom: 12px;     /* reduce padding under each chart */
 }
 .chart-block canvas {
     max-width: 100%;
-    height: 150px;          /* fix a smaller height */
+    height: 120px;            /* smaller height */
     background: #fff0f5;
-    border-radius: 8px;
-    margin-bottom: 10px;    /* tighter bottom margin */
+    border-radius: 6px;
+    margin-bottom: 8px;       /* tighter bottom margin */
 }
 .chart-info {
     font-family: 'Courier New', monospace;
-    font-size: 0.8em;       /* slightly smaller font */
-    margin-top: 6px;
-    padding: 4px 0;
-    min-height: 30px;       /* reduce height for info text */
+    font-size: 0.75em;        /* smaller font */
+    margin-top: 4px;
+    padding: 2px 0;
+    min-height: 28px;         /* reduce height for info text */
     color: #555;
 }
 
@@ -154,7 +154,7 @@ button#logout-btn:hover {
     scrollbar-color: #ee92c3 lightcoral;
 }
 .table-scroll::-webkit-scrollbar {
-    height: 6px;            /* slightly smaller scrollbar */
+    height: 6px;              /* smaller scrollbar */
 }
 .table-scroll::-webkit-scrollbar-thumb {
     background-color: #ee92c3;
@@ -165,51 +165,51 @@ button#logout-btn:hover {
 .pixelify-title {
     font-family: "Pixelify Sans", sans-serif;
     font-weight: 600;
-    font-size: 1.2rem;      /* slightly smaller title font */
+    font-size: 1.1rem;        /* slightly smaller title font */
 }
 
 /* ====== Welcome Message ====== */
 .welcome-message {
     font-family: "WDXL Lubrifont TC", sans-serif;
-    font-size: 1.6rem;      /* slightly smaller welcome text */
+    font-size: 1.4rem;        /* slightly smaller welcome text */
     color: #c95fcc;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 /* ====== Info / Status Text ====== */
 .info-message {
     text-align: right;
-    margin-right: 20px;
-    font-size: 0.9rem;      /* tiny reduce */
+    margin-right: 18px;
+    font-size: 0.85rem;       /* tiny reduce */
 }
 
 /* ====== STATUS CONTAINER (always reserve space) ====== */
 .status-container {
     display: flex;
     align-items: center;
-    min-height: 1.5rem;     /* Reserve vertical space so layout doesn’t jump */
-    margin-bottom: 4px;     /* Small gap below the status container */
+    min-height: 1.4rem;       /* Reserve vertical space so layout doesn’t jump */
+    margin-bottom: 3px;       /* Small gap below the status container */
 }
 .status-container .status-message {
-    margin: 0;           /* Reset default <p> margins */
-    font-size: 0.9rem;
+    margin: 0;                /* Reset default <p> margins */
+    font-size: 0.85rem;
     color: #d46ba3;
 }
 .status-container .live-dot {
-    width: 10px;         /* slightly smaller dot */
-    height: 10px;
+    width: 8px;               /* slightly smaller dot */
+    height: 8px;
     background-color: #ee92c3;
     border-radius: 50%;
-    display: none;       /* Hidden by default; JS toggles display:inline-block */
-    margin-right: 6px;   /* Space between dot and text */
+    display: none;            /* Hidden by default; JS toggles display:inline-block */
+    margin-right: 5px;        /* Space between dot and text */
     animation: pulse 1.5s infinite;
 }
 
 /* ====== Last Updated (a bit more spacing) ====== */
 .last-updated {
-    font-size: 0.75rem;    /* reduce font */
+    font-size: 0.7rem;        /* reduce font */
     color: #777;
-    margin: 6px 0;         /* tighten margins */
+    margin: 5px 0;            /* tighten margins */
 }
 
 /* ====== Pulse Animation for Live Dot ====== */

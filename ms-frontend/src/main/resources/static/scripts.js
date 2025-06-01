@@ -250,9 +250,10 @@ function displayCDRs(data, options = {}) {
     // Reverse so newest (last in JSON) appears first
     filteredData = filteredData.reverse();
 
-    // Re‐build <thead> depending on serviceType filter
-    if (options.serviceType === 'data') {
-        thead.innerHTML = `
+    if(!stopPollingFlag){
+        // Re‐build <thead> depending on serviceType filter
+        if (options.serviceType === 'data') {
+            thead.innerHTML = `
             <tr>
                 <th>ID</th>
                 <th>Customer</th>
@@ -260,25 +261,25 @@ function displayCDRs(data, options = {}) {
                 <th>Usage</th>
                 <th>Start Date-Time</th>
             </tr>`;
-        tbody.innerHTML = '';
-        filteredData
-            .filter(cdr => cdr.serviceType.toLowerCase() === 'data')
-            .forEach(cdr => {
-                const tr = document.createElement('tr');
-                tr.classList.add('new-row'); // fade-in animation
-                tr.style.backgroundColor = getRandomPastelColor();
-                tr.innerHTML = `
+            tbody.innerHTML = '';
+            filteredData
+                .filter(cdr => cdr.serviceType.toLowerCase() === 'data')
+                .forEach(cdr => {
+                    const tr = document.createElement('tr');
+                    tr.classList.add('new-row'); // fade-in animation
+                    tr.style.backgroundColor = getRandomPastelColor();
+                    tr.innerHTML = `
                     <td>${cdr.id}</td>
                     <td>${cdr.anum}</td>
                     <td>${cdr.serviceType}</td>
                     <td>${cdr.usage}</td>
                     <td>${cdr.startDateTime}</td>`;
-                tbody.appendChild(tr);
-                // Remove animation class after 0.5s (one cycle) to avoid re-trigger
-                setTimeout(() => { tr.classList.remove('new-row'); }, 500);
-            });
-    } else {
-        thead.innerHTML = `
+                    tbody.appendChild(tr);
+                    // Remove animation class after 0.5s (one cycle) to avoid re-trigger
+                    setTimeout(() => { tr.classList.remove('new-row'); }, 500);
+                });
+        } else {
+            thead.innerHTML = `
             <tr>
                 <th>ID</th>
                 <th>ANUM</th>
@@ -287,21 +288,22 @@ function displayCDRs(data, options = {}) {
                 <th>Usage</th>
                 <th>Start Date-Time</th>
             </tr>`;
-        tbody.innerHTML = '';
-        filteredData.forEach(cdr => {
-            const tr = document.createElement('tr');
-            tr.classList.add('new-row');
-            tr.style.backgroundColor = getRandomPastelColor();
-            tr.innerHTML = `
+            tbody.innerHTML = '';
+            filteredData.forEach(cdr => {
+                const tr = document.createElement('tr');
+                tr.classList.add('new-row');
+                tr.style.backgroundColor = getRandomPastelColor();
+                tr.innerHTML = `
                 <td>${cdr.id}</td>
                 <td>${cdr.anum}</td>
                 <td>${cdr.bnum}</td>
                 <td>${cdr.serviceType}</td>
                 <td>${cdr.usage}</td>
                 <td>${cdr.startDateTime}</td>`;
-            tbody.appendChild(tr);
-            setTimeout(() => { tr.classList.remove('new-row'); }, 500);
-        });
+                tbody.appendChild(tr);
+                setTimeout(() => { tr.classList.remove('new-row'); }, 500);
+            });
+        }
     }
 }
 
